@@ -1,62 +1,93 @@
-# Tenant-Aware Next.js Template
+# Frontend Tenant Dashboard Starter
 
-This repository packages everything we learned while analysing the following open projects:
+A Next.js 14 template for multi-tenant dashboards that runs entirely in the browser. It bundles Shadcn UI, typed mock data, and React Query hooks so you can prototype flows locally and swap in real APIs later.
 
-- [sanidhyy/finance-dashboard](https://github.com/sanidhyy/finance-dashboard) – feature-driven App Router structure and CRUD flows.
-- [JosueIsOffline/finance-saas-platform](https://github.com/JosueIsOffline/finance-saas-platform) – multi-step dashboards and billing ideas.
-- [calcom/cal.com](https://github.com/calcom/cal.com) – enterprise-grade monorepo patterns, TRPC/Hono APIs, testing, and documentation discipline.
+## Why you might use it
 
-The goal is to give you a head start when building a tenant-aware SaaS dashboard with Next.js 14+. The template layers these ideas into an opinionated, phase-by-phase build (see `tenant-template-roadmap.md` for the full journey). This edition is frontend-only so you can iterate quickly with deterministic mock data before wiring up a backend.
+- **Client-only architecture** – tenant session and data live in localStorage + mock repositories; no database or API server required.
+- **Feature-first modules** – each domain (accounts, billing, tenants) owns its repositories, services, hooks, and UI components.
+- **Ready-made UI system** – Shadcn primitives, theme provider, and shared layout pieces give you production styling without design thrash.
+- **Quality guardrails** – TypeScript, ESLint, Prettier, lint-staged/Husky, Vitest, and Playwright cover the bases from unit tests to e2e checks.
 
-## What’s included
+## Tech stack
 
-- **App Router scaffold** with protected dashboard/auth segments, shared providers, and a client-only tenant session context.
-- **Mock data layer** implemented with typed repositories (`apps/web/src/mocks/sample-data.ts`) so the UI runs without a backend.
-- **Feature-first architecture** – React Query services, modular hooks, and Shadcn-based UI primitives under `features/<domain>`.
-- **Testing harness**: Vitest (unit tests with React Testing Library + happy-dom) and Playwright E2E scaffold.
-- **Observability & ops**: Lightweight console logger, metric helper, environment validation, deployment + testing docs.
-- **Feature flags & optional slices**: Billing and marketplace routes/components toggle via env vars for staged rollouts.
+- Next.js App Router · React 18 · TypeScript 5
+- Shadcn UI + TailwindCSS utilities
+- TanStack Query for data fetching/caching
+- Vitest + React Testing Library + Playwright
+- Husky + lint-staged + Prettier + ESLint
 
-## Quick start
+## Project layout
 
-```bash
-# install deps
-npm install
-
-# validate environment (fill in values via .env.example)
-npm run env:check
-
-# run dev server
-npm run dev --workspace web
-
-# format / lint / type-check / test
-npm run format
-npm run lint
-npm run type-check
-npm run test:unit
+```
+apps/web/
+  src/
+    app/                # App Router routes (auth + dashboard)
+    components/         # Shared UI primitives (Shadcn re-exports)
+    features/<domain>/  # Feature modules: api, hooks, components
+    mocks/              # Typed mock datasets
+    providers/          # Query/theme/tenant session providers
+    lib/                # Helpers (flags, logging, metrics, tests)
 ```
 
-Playwright smoke tests live in `apps/web/tests/e2e`. Set `E2E_BASE_URL` and start the app before running `npm run test:e2e`.
+Supporting docs live under `docs/` and the roadmap in `tenant-template-roadmap.md`.
+
+## Getting started
+
+```bash
+# install dependencies
+npm install
+
+# check optional env vars (feature flags, etc.)
+npm run env:check
+
+# start the dashboard
+npm run dev --workspace web
+
+# run quality checks
+npm run lint --workspace web
+npm run type-check --workspace web
+npm run test:unit --workspace web
+```
+
+Playwright smoke tests are in `apps/web/tests/e2e`; start the dev server in another tab and run `npm run test:e2e --workspace web`.
 
 ## Feature flags
 
-Controlled via `.env*`:
+Toggle slices from `.env*` files:
 
 ```env
 NEXT_PUBLIC_FEATURE_BILLING=true
 NEXT_PUBLIC_FEATURE_MARKETPLACE=false
 ```
 
-Use `getFeatureFlag()` server-side and `useFeatureFlag()` client-side to gate components, routes, or navigation.
+`getFeatureFlag()` and `useFeatureFlag()` (see `src/lib/flags.ts`) gate navigation, pages, and components.
+
+## Quality toolkit
+
+- **Linting & formatting** – ESLint + Prettier run via lint-staged/Husky on every commit; `npm run format` formats the repo manually.
+- **Type safety** – `npm run type-check --workspace web`.
+- **Unit tests** – Vitest collocated with code (`*.test.ts[x]`).
+- **End-to-end** – Playwright config under `apps/web`.
+
+## Extending to a backend
+
+When you are ready to leave mock mode:
+
+1. Replace repositories in `features/<domain>/api` with real fetch calls or SDKs.
+2. Keep shared types in `src/types` so both client and server agree on payloads.
+3. Swap the tenant session provider to read from your auth solution (cookies, JWT, etc.).
+4. Reintroduce API routes or server functions as needed—docs outline the original phased plan.
 
 ## Documentation
 
-- `tenant-template-roadmap.md` – phased rollout of the entire template.
-- `docs/feature-modules.md` – how to add new feature slices.
-- `docs/api-layer.md`, `docs/testing.md`, `docs/deployment.md`, `docs/feature-flags.md`, `docs/shadcn-workflow.md`, `docs/tenant-session.md` – deep dives on each subsystem.
+- `tenant-template-roadmap.md` – phased rollout from frontend-only to production-grade.
+- `docs/api-layer.md` – how the mock data flow works and how to plug in real endpoints.
+- `docs/data-layer.md` – typed dataset approach and migration plan.
+- `docs/feature-modules.md`, `docs/tenant-session.md`, `docs/feature-flags.md`, `docs/testing.md`, `docs/deployment.md`, `docs/shadcn-workflow.md` – subsystem deep dives.
 
 ## Contributing
 
-This template is intended as a starting point—adapt the roadmap, swap the mock repositories for real APIs, and plug in your identity/billing providers. PRs that improve the underpinning patterns or documentation are welcome.
+This starter is intentionally opinionated but adaptable. If you improve the architecture, docs, or tooling, feel free to open a PR.
 
 Happy building! 🚀

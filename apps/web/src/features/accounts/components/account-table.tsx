@@ -4,7 +4,7 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/layout/data-table";
-import type { Account } from "@/db/schema";
+import type { Account } from "@/types/accounts";
 
 const columns: ColumnDef<Account>[] = [
   {

@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
-import type { TenantWithSubscription } from "@/features/tenants/api/tenant-repository";
+import type { TenantWithSubscription } from "@/types/tenants";
 import * as repository from "@/features/tenants/api/tenant-repository";
 import { getTenantProfile, listTenantsForUser } from "@/features/tenants/api/tenant-service";
 

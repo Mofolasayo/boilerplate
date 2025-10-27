@@ -2,21 +2,18 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import type { Account } from "@/db/schema";
-import { api } from "@/lib/hono/client";
+import { listAccountsForTenant } from "@/features/accounts/api/account-service";
+import { useTenantSession } from "@/providers/tenant-session-provider";
 
 export const useAccounts = () => {
-  return useQuery<Account[]>({
-    queryKey: ["accounts"],
-    queryFn: async () => {
-      const response = await api.accounts.$get();
+  const session = useTenantSession();
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch accounts");
-      }
-
-      const { data } = (await response.json()) as { data: Account[] };
-      return data;
-    },
+  return useQuery({
+    queryKey: ["accounts", session.tenantId, session.userId],
+    queryFn: async () =>
+      listAccountsForTenant({
+        tenantId: session.tenantId,
+        userId: session.userId,
+      }),
   });
 };

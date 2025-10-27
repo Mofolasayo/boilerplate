@@ -6,16 +6,18 @@ import type { PropsWithChildren } from "react";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { TenantSessionProvider } from "@/providers/tenant-session-provider";
-import type { TenantContext } from "@/lib/auth/types";
+import type { TenantSession } from "@/lib/auth/types";
 
 type AppProvidersProps = PropsWithChildren<{
-  tenantSession: TenantContext;
+  initialTenantSession?: TenantSession;
 }>;
 
-export const AppProviders = ({ tenantSession, children }: AppProvidersProps) => (
+export const AppProviders = ({ children, initialTenantSession }: AppProvidersProps) => (
   <ThemeProvider>
     <QueryProvider>
-      <TenantSessionProvider value={tenantSession}>{children}</TenantSessionProvider>
+      <TenantSessionProvider initialSession={initialTenantSession}>
+        {children}
+      </TenantSessionProvider>
     </QueryProvider>
   </ThemeProvider>
 );

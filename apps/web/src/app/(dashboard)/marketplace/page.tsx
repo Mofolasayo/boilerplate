@@ -1,11 +1,23 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFeatureFlag } from "@/lib/flags";
+import { useFeatureFlag } from "@/lib/flags";
 
-const MarketplacePage = async () => {
-  if (!getFeatureFlag("marketplace")) {
-    redirect("/dashboard");
+const MarketplacePage = () => {
+  const router = useRouter();
+  const marketplaceEnabled = useFeatureFlag("marketplace");
+
+  useEffect(() => {
+    if (!marketplaceEnabled) {
+      router.replace("/dashboard");
+    }
+  }, [marketplaceEnabled, router]);
+
+  if (!marketplaceEnabled) {
+    return null;
   }
 
   return (

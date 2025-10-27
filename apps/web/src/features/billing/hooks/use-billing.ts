@@ -2,22 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { api } from "@/lib/hono/client";
+import { getTenantSubscription } from "@/features/billing/api/billing-service";
+import { useTenantSession } from "@/providers/tenant-session-provider";
 
 export const useBilling = () => {
+  const session = useTenantSession();
+
   return useQuery({
-    queryKey: ["billing", "subscription"],
-    queryFn: async () => {
-      const response = await api.billing.$get();
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch billing info");
-      }
-
-      const { data } = (await response.json()) as {
-        data: { plan: string; status: string; renewAt?: string | null } | null;
-      };
-      return data;
-    },
+    queryKey: ["billing", "subscription", session.tenantId],
+    queryFn: async () => getTenantSubscription({ tenantId: session.tenantId }),
   });
 };

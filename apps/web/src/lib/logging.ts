@@ -1,17 +1,19 @@
-import pino from "pino";
+type LoggerMethod = (...args: unknown[]) => void;
 
-const level = process.env.LOG_LEVEL ?? (process.env.NODE_ENV === "production" ? "info" : "debug");
+const withPrefix =
+  (method: LoggerMethod) =>
+  (message: unknown, ...args: unknown[]) => {
+    const prefix = "[tenant-dashboard]";
+    if (typeof message === "string") {
+      method(`${prefix} ${message}`, ...args);
+    } else {
+      method(prefix, message, ...args);
+    }
+  };
 
-export const logger = pino({
-  level,
-  transport:
-    process.env.NODE_ENV === "production"
-      ? undefined
-      : {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "HH:MM:ss.l",
-          },
-        },
-});
+export const logger = {
+  debug: withPrefix(console.debug.bind(console)),
+  info: withPrefix(console.info.bind(console)),
+  warn: withPrefix(console.warn.bind(console)),
+  error: withPrefix(console.error.bind(console)),
+};

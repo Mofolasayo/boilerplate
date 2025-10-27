@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
-import type { Account } from "@/db/schema";
+import type { Account } from "@/types/accounts";
 import * as repository from "@/features/accounts/api/account-repository";
 import { listAccountsForTenant } from "@/features/accounts/api/account-service";
 

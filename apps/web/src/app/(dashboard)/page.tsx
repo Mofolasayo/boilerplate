@@ -1,9 +1,11 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTenantContext } from "@/lib/auth/session";
+import { useTenantSession } from "@/providers/tenant-session-provider";
 
 const DashboardPage = () => {
-  const tenant = getTenantContext();
+  const tenant = useTenantSession();
 
   return (
     <div className="space-y-6">

@@ -9,8 +9,8 @@ NEXT_PUBLIC_FEATURE_MARKETPLACE=false
 
 Use helpers from `src/lib/flags.ts`:
 
-- `getFeatureFlag(flag)` – access on the server.
-- `useFeatureFlag(flag)` – client-side hook used by the header/nav and feature pages.
+- `getFeatureFlag(flag)` – synchronous helper for places that run during module evaluation (still works in the browser because flags are env-backed constants).
+- `useFeatureFlag(flag)` – client hook used by the header/nav and feature pages.
 
 Examples:
 

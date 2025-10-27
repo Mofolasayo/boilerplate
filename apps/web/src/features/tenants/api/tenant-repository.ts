@@ -1,53 +1,37 @@
-import { and, eq } from "drizzle-orm";
+import { TENANT_MEMBERS, TENANTS, TENANT_SUBSCRIPTIONS } from "@/mocks/sample-data";
+import type { TenantSubscription, TenantWithSubscription } from "@/types/tenants";
 
-import { db } from "@/db/client";
-import {
-  tenantMembers,
-  tenants,
-  tenantSubscriptions,
-  type Tenant,
-  type TenantSubscription,
-} from "@/db/schema";
-
-export type TenantWithSubscription = Tenant & {
-  subscription: TenantSubscription | null;
+const combineTenant = (tenantId: string): TenantSubscription | null => {
+  const subscription = TENANT_SUBSCRIPTIONS.find((item) => item.tenantId === tenantId);
+  return subscription ?? null;
 };
 
 export const getTenantForUser = async (tenantId: string, userId: string) => {
-  const [record] = await db
-    .select({
-      tenant: tenants,
-      subscription: tenantSubscriptions,
-    })
-    .from(tenants)
-    .leftJoin(tenantSubscriptions, eq(tenantSubscriptions.tenantId, tenants.id))
-    .innerJoin(tenantMembers, eq(tenantMembers.tenantId, tenants.id))
-    .where(and(eq(tenants.id, tenantId), eq(tenantMembers.userId, userId)));
+  const tenant = TENANTS.find((item) => item.id === tenantId);
+  if (!tenant) return null;
 
-  if (!record) return null;
+  const hasMembership = TENANT_MEMBERS.some(
+    (member) => member.tenantId === tenantId && member.userId === userId,
+  );
+
+  if (!hasMembership) return null;
 
   return {
-    ...record.tenant,
-    subscription: record.subscription,
+    ...tenant,
+    subscription: combineTenant(tenantId),
   } satisfies TenantWithSubscription;
 };
 
 export const getTenantsForUser = async (userId: string) => {
-  const rows = await db
-    .select({
-      tenant: tenants,
-      subscription: tenantSubscriptions,
-    })
-    .from(tenants)
-    .leftJoin(tenantSubscriptions, eq(tenantSubscriptions.tenantId, tenants.id))
-    .innerJoin(tenantMembers, eq(tenantMembers.tenantId, tenants.id))
-    .where(eq(tenantMembers.userId, userId));
+  const tenantIds = new Set(
+    TENANT_MEMBERS.filter((member) => member.userId === userId).map((member) => member.tenantId),
+  );
 
-  return rows.map(
-    ({ tenant, subscription }) =>
+  return TENANTS.filter((tenant) => tenantIds.has(tenant.id)).map(
+    (tenant) =>
       ({
         ...tenant,
-        subscription,
+        subscription: combineTenant(tenant.id),
       }) satisfies TenantWithSubscription,
   );
 };

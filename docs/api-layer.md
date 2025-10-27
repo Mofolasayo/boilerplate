@@ -1,24 +1,18 @@
-# API layer overview
+# Client data flow
 
-Phase 4 introduces a typed edge API using Hono:
+This boilerplate ships as a frontend-only stack. Rather than calling server-hosted APIs, feature services read from mock datasets under `apps/web/src/mocks` and expose typed helpers to the UI.
 
-- `src/app/api/[[...route]]/route.ts` registers nested routers and exposes the app on the edge runtime. Add new feature routers beside `tenants` and mount them here.
-- `src/lib/api/router.ts` and `src/lib/api/middleware.ts` provide helpers to construct routers and inject the current tenant context. Routes call `c.get("tenantContext")` to access user/tenant metadata.
-- `src/app/api/tenants/index.ts` is the reference implementation. It requires tenant context via middleware, fetches from the Drizzle repositories, and responds with JSON payloads.
-- `src/lib/hono/client.ts` exports a typed client using `hc<AppRouter>`. Client hooks call this to avoid stringly typed fetches.
-- `src/features/tenants/api/use-list-tenants.ts` shows how to wrap API calls with TanStack Query, reusing the `"tenants"` cache key for invalidations.
+## Where to look
 
-## Cache strategy
+- `apps/web/src/features/<feature>/api` — async helpers that return mock data. Swap these out for real fetch calls once you stand up a backend.
+- `apps/web/src/features/<feature>/hooks` — React Query wrappers that provide loading/error state to components.
+- `apps/web/src/mocks/sample-data.ts` — centralised demo records for tenants, accounts, and subscriptions.
 
-- Use descriptive query keys: `useListTenants` uses `["tenants"]`. Include tenant or filter identifiers when data varies.
-- On mutating operations, invalidate affected keys. For example, after creating a tenant call `queryClient.invalidateQueries({ queryKey: ["tenants"] })`.
-- Edge handlers remain stateless and rely on the tenant cookie for context, meaning caches should be per-tenant on the client side.
+## Adding a backend later
 
-## Adding a new endpoint
+1. Replace the mock repositories with real data sources (REST, GraphQL, tRPC, etc.).
+2. Move shared typing into `apps/web/src/types` so both client and server agree on payloads.
+3. Update hooks to use `fetch`/`axios` (or your preferred client) and keep cache keys per tenant.
+4. Remove the mock dataset once your data layer is wired to live services.
 
-1. Create a router under `src/app/api/<feature>`. Use `withTenantContext` to guarantee auth.
-2. Export service functions from your feature module to keep business logic out of route handlers.
-3. Add corresponding client utilities in `src/features/<feature>/api` (React Query, mutation hooks, etc.).
-4. Update UI components to consume these hooks, keeping data fetching and UI concerns separate.
-
-By structuring the API this way, server logic stays DRY, multi-tenant checks are centralized, and client hooks inherit strong typing from the Hono router.
+Until then, the frontend runs entirely in the browser with deterministic sample data, making it easy to prototype UI without provisioning infrastructure.

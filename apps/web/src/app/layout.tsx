@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 
 import { Toaster } from "@/components/ui/toaster";
 import { AppProviders } from "@/providers/app-providers";
-import { getTenantContext } from "@/lib/auth/session";
 
 import "./globals.css";
 
@@ -28,12 +27,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const tenantSession = getTenantContext();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AppProviders tenantSession={tenantSession}>
+        <AppProviders>
           {children}
           <Toaster />
         </AppProviders>

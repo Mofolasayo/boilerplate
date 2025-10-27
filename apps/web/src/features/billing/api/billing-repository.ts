@@ -1,14 +1,6 @@
-import { eq } from "drizzle-orm";
-
-import { db } from "@/db/client";
-import { tenantSubscriptions } from "@/db/schema";
+import { TENANT_SUBSCRIPTIONS } from "@/mocks/sample-data";
 
 export const getSubscriptionForTenant = async (tenantId: string) => {
-  const [subscription] = await db
-    .select()
-    .from(tenantSubscriptions)
-    .where(eq(tenantSubscriptions.tenantId, tenantId))
-    .limit(1);
-
+  const subscription = TENANT_SUBSCRIPTIONS.find((item) => item.tenantId === tenantId);
   return subscription ?? null;
 };

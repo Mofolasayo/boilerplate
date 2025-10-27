@@ -37,7 +37,11 @@
     "typescript": "^5.6.3"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,md,css,scss}": [
+    "apps/web/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint --workspace web -- --max-warnings=0 --file",
+      "prettier --check"
+    ],
+    "*.{json,md,css,scss}": [
       "prettier --check"
     ]
   },

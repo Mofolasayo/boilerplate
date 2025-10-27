@@ -10,10 +10,9 @@ Phase 5 adds reusable building blocks for feature dashboards:
 
 When adding a new feature:
 
-1. **Service layer** – expose repositories and service functions under `src/features/<feature>/api`.
-2. **API route** – create a Hono router under `src/app/api/<feature>` and mount it in `[[...route]]/route.ts`.
-3. **Hooks** – add React Query hooks under `src/features/<feature>/hooks` that call the typed Hono client.
-4. **UI** – assemble screens using the shared layout components plus feature-specific tables/cards. Gate the screen with `getFeatureFlag`/`useFeatureFlag` if you want staged rollouts.
-5. **Invalidation** – reuse the `queryKey` naming convention so mutations can call `queryClient.invalidateQueries({ queryKey: [...] })`.
+1. **Service layer** – expose repositories and service functions under `src/features/<feature>/api`. For now they can return mock data; later you can swap them to hit a real API.
+2. **Hooks** – add React Query hooks under `src/features/<feature>/hooks` that call the service functions and manage cache keys.
+3. **UI** – assemble screens using the shared layout components plus feature-specific tables/cards. Gate the screen with `getFeatureFlag`/`useFeatureFlag` if you want staged rollouts.
+4. **Invalidation** – reuse the `queryKey` naming convention so future mutations can call `queryClient.invalidateQueries({ queryKey: [...] })`.
 
 Following this pattern keeps concerns separated while making new dashboard sections quick to spin up.

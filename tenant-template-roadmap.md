@@ -2,6 +2,8 @@
 
 This guide translates the architectural strengths and pitfalls observed in `finance-dashboard`, `finance-platform`, and the Cal.com monorepo into a phased plan for building a production-ready, multi-tenant Next.js template. Progress through the phases sequentially; each one introduces guardrails that keep tenant isolation, performance, and developer experience in balance.
 
+_The frontend-only edition of the template implements phases 0–2 with mock data and client-side sessions. Phases 3+ outline future work for when you add a backend or persistence layer._
+
 ## Phase 0 – Foundations & Tooling
 
 - **Repository shape**: Start with a Turborepo (or at minimum a strict Next.js workspace) to accommodate future packages. Cal.com’s workspaces keep auth, UI, and domain logic separated while still sharing linting and build pipelines.
@@ -20,18 +22,18 @@ This guide translates the architectural strengths and pitfalls observed in `fina
 ## Phase 2 – Authentication & Tenant Boundaries
 
 - **Middleware guardrails**: Use Clerk or NextAuth with edge middleware to block unauthenticated requests (`finance-dashboard/middleware.ts`). Expand the route matcher early to accommodate future tenant-only sections.
-- **Tenant context**: Store tenant metadata (organization/team ID, roles) in the session. Expose a server helper (e.g., `getTenantContext()`) so every API handler starts with uniform access control instead of repeating inline `getAuth` checks.
+- **Tenant context**: Store tenant metadata (organization/team ID, roles) in the session. In the frontend build, `useTenantSession()` provides this data client-side; when you add server routes, expose an equivalent helper there so multi-tenant checks stay centralized.
 - **Client segregation**: Wrap tenant-aware components in client boundaries only when interactivity is required, keeping server components default for data-heavy dashboards.
 
 ## Phase 3 – Data Layer & Validation
 
-- **Schema design**: Choose Drizzle or Prisma; enforce tenant scoping through composite keys or explicit `tenantId` columns on every table (Cal.com’s Prisma schema is the reference). Ensure each table declares primary keys and foreign key constraints the way `finance-dashboard`’s Drizzle models do.
+- **Schema design (future)**: Choose Drizzle or Prisma; enforce tenant scoping through composite keys or explicit `tenantId` columns on every table (Cal.com’s Prisma schema is the reference). Ensure each table declares primary keys and foreign key constraints the way `finance-dashboard`’s Drizzle models do.
 - **Generated validators**: Mirror the `createInsertSchema` pattern so form schemas derive from database models. Extend with `zod` refinements per feature to prevent drift between client-side and server-side validation.
 - **Repository utilities**: Centralize DB access (e.g., `db/transactions.repository.ts`) and wrap tenant filters there. Cache repetitive queries with helpers akin to Cal.com’s service layer to keep API handlers lean.
 
 ## Phase 4 – Tenant-Aware API Surface
 
-- **Edge-friendly routers**: Compose Hono or tRPC routers under `/api` similar to `app/api/[[...route]]/route.ts` but inject the tenant context helper before executing feature logic.
+- **Edge-friendly routers (future)**: Compose Hono or tRPC routers under `/api` similar to `app/api/[[...route]]/route.ts` but inject the tenant context helper before executing feature logic.
 - **Consistent cache strategy**: Adopt TanStack Query patterns with deterministic keys (`["summary", tenantId, filters]`) and eagerly invalidate related datasets, following the example set in `finance-dashboard`’s transaction hooks.
 - **Bulk operations & imports**: Provide scalable endpoints (bulk create/delete, CSV import) using validated payloads and transaction-aware repositories to match real-world tenant needs.
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd -- "$(dirname "$0")/.." || exit 1
+PATH="$PWD/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+npx lint-staged

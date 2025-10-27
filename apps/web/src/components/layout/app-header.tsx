@@ -1,20 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/lib/auth/actions";
 import { useTenantSession } from "@/providers/tenant-session-provider";
 import { cn } from "@/lib/utils";
 import { useFeatureFlag } from "@/lib/flags";
 
 export const AppHeader = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const tenant = useTenantSession();
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
   const billingEnabled = useFeatureFlag("billing");
   const marketplaceEnabled = useFeatureFlag("marketplace");
 
@@ -26,9 +26,11 @@ export const AppHeader = () => {
   ].filter((link) => link.enabled);
 
   const handleSignOut = () => {
-    startTransition(async () => {
-      await signOut();
-    });
+    if (pending) return;
+
+    setPending(true);
+    tenant.clearSession();
+    router.replace("/sign-in");
   };
 
   return (

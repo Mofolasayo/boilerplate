@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useListTenants } from "@/features/tenants/api/use-list-tenants";
-import type { TenantWithSubscription } from "@/features/tenants/api/tenant-repository";
+import type { TenantWithSubscription } from "@/types/tenants";
 
 const TenantsClient = () => {
   const { data, isLoading, isError } = useListTenants();

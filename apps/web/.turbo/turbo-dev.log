@@ -1,0 +1,29 @@
+
+> web@0.1.0 dev
+> next dev
+
+  [1m[38;2;173;127;168m▲ Next.js 14.2.13[39m[22m
+  - Local:        http://localhost:3000
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 11.8s
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 8.4s (691 modules)
+ GET / [34m307[39m in 8994ms
+ [37m[1m○[22m[39m Compiling /_not-found ...
+ [32m[1m✓[22m[39m Compiled /_not-found in 7s (662 modules)
+ GET /dashboard [33m404[39m in 7641ms
+ [32m[1m✓[22m[39m Compiled in 273ms (330 modules)
+ GET /dashboard [33m404[39m in 197ms
+ GET / [34m307[39m in 109ms
+ GET /dashboard [33m404[39m in 78ms
+ [32m[1m✓[22m[39m Compiled in 1640ms (662 modules)
+ GET /dashboard [33m404[39m in 350ms
+ [32m[1m✓[22m[39m Compiled in 1141ms (662 modules)
+ GET /dashboard [33m404[39m in 193ms
+ [32m[1m✓[22m[39m Compiled in 601ms (328 modules)
+ [37m[1m○[22m[39m Compiling /_not-found ...
+ [32m[1m✓[22m[39m Compiled /_not-found in 1234ms (640 modules)
+ GET /dashboard [33m404[39m in 658ms
+[?25h
+⠙[1G[0K
